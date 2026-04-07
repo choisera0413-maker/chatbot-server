@@ -8,7 +8,7 @@ let faqData = [];
 
 // 🔥 GitHub CSV 불러오기
 async function loadCSV() {
-  const url = "https:faq.csv";
+  const url = "https://raw.githubusercontent.com/faq.csv";
 
   const response = await axios.get(url);
   const csv = response.data;
