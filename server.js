@@ -1,19 +1,30 @@
 const express = require("express");
-const fs = require("fs");
+const axios = require("axios");
+
 const app = express();
-
 app.use(express.json());
-
-// CSV 읽기
-const csv = fs.readFileSync("faq.csv", "utf-8");
-const lines = csv.split("\n").slice(1);
 
 let faqData = [];
 
-lines.forEach(line => {
-  const [question, answer, link1, link2] = line.split(",");
-  faqData.push({ question, answer, link1, link2 });
-});
+// 🔥 GitHub CSV 불러오기
+async function loadCSV() {
+  const url = "https:faq.csv";
+
+  const response = await axios.get(url);
+  const csv = response.data;
+
+  const lines = csv.split("\n").slice(1);
+
+  faqData = lines.map(line => {
+    const [question, answer, link1, link2] = line.split(",");
+    return { question, answer, link1, link2 };
+  });
+
+  console.log("✅ CSV 로드 완료");
+}
+
+// 서버 시작 시 1회 로드
+loadCSV();
 
 app.post("/chatbot", (req, res) => {
   const userMsg = req.body.userRequest.utterance;
@@ -53,4 +64,6 @@ app.post("/chatbot", (req, res) => {
   });
 });
 
-app.listen(3000);
+app.listen(3000, () => {
+  console.log("🚀 서버 실행됨");
+});
